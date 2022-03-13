@@ -9,6 +9,13 @@
                 <v-list-item-title>Home</v-list-item-title>
             </v-list-item>
 
+            <v-list-item to="/timers">
+                <v-list-item-action>
+                    <v-icon>mdi-alarm</v-icon>
+                </v-list-item-action>
+                <v-list-item-title>Timers</v-list-item-title>
+            </v-list-item>
+
             <v-divider></v-divider>
 
             <v-list-item to="/settings">

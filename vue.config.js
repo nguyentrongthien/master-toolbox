@@ -16,6 +16,9 @@ module.exports = {
           "artifactName": "master_toolbox.exe"
         },
       }
+    },
+    moment: {
+      locales: ['en']
     }
   }
 }
