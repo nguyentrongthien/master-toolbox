@@ -7,10 +7,15 @@
             </v-card-title>
 
             <v-card-text>
-                <v-text-field label="Name of alert" v-model="name" hide-details
-                              prepend-icon="mdi-pencil-outline">
-
-                </v-text-field>
+                <v-combobox
+                    label="Name of alert"
+                    v-model="name"
+                    :items="pastNames"
+                    clearable
+                    hide-details
+                    prepend-icon="mdi-pencil-outline"
+                    hide-selected
+                ></v-combobox>
             </v-card-text>
 
             <v-card-text>
@@ -170,7 +175,6 @@ export default {
         resetInput() {
             this.name = '';
             this.description = '';
-            this.zone = 'America/Los_Angeles';
             this.picker.date = moment().tz('America/Los_Angeles').format('YYYY-MM-DD');
             this.picker.time = moment().tz('America/Los_Angeles').format('hh:mm');
         },
@@ -184,6 +188,9 @@ export default {
                 this.$emit('input', val);
             }
         },
+        pastNames() {
+            return this.$store.getters['timers/pastNames'];
+        }
     }
 }
 </script>
