@@ -3,8 +3,6 @@ const { dialog, app } = require('electron');
 
 export default {
     readData : (filePath) => {
-        console.log('reading ' + filePath);
-        if(fs.existsSync(filePath)) console.log(filePath + ' not exist')
         return JSON.parse(fs.readFileSync(filePath));
     },
     writeData : (args) => {

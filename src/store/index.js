@@ -48,8 +48,7 @@ const state = {
     data: {},
     appPath: null,
     promptForDirectory: false,
-    webViewUrl: null,
-    htmlObject: null,
+    moduleNames: [],
 };
 const mutations = {
     setData : (state, payload) => {
@@ -85,7 +84,11 @@ const getters = {
     promptForDirectory : state => state.promptForDirectory,
 };
 const actions = {
-    initialize : () => {
+    initialize : (context, moduleNames) => {
+        for(let name in moduleNames) {
+            if(Object.hasOwnProperty.call(moduleNames, name))
+                context.state.moduleNames.push(name);
+        }
         window.ipcRenderer.send('from-renderer', {
             fn: 'getAppPath', payload: null, passThrough: {flag: 'initializeAppPath'}
         });
@@ -100,7 +103,7 @@ const actions = {
                 fn: 'readData', payload: context.getters['appPath'] + '/' + fileName, passThrough: {flag: 'readInitialData'}
             });
         } else {
-            let res = payload.result;
+            let res = payload.result.appData;
             if(typeof res === "undefined" || res === null) res = {};
             defaults.forEach(prop => {
                 context.commit('setDataProp', {
@@ -108,11 +111,30 @@ const actions = {
                     value: res.hasOwnProperty.call(res, prop.key) ? res[prop.key] : prop.value
                 });
             });
+            payload.result.moduleSettings.forEach(data => {
+                if(context.state.moduleNames.includes(data.name)) {
+                    try {
+                        context.dispatch(`${data.name}/setModuleData`, data.settings).then();
+                    } catch (e) { console.log(e); }
+                }
+            })
         }
     },
     writeData : (context) => {
         if(context.state.data.version) { // Check if data has already been initialized (might have concurrency issue)
-            writeToDisc({ path: context.getters['appPath'] + '/', file: fileName, data: context.state.data });
+            let moduleSettings = [];
+            for (let name of context.state.moduleNames) {
+                let settings = context.rootGetters[`${name}/getModuleData`];
+                if (settings) moduleSettings.push({ name: name, settings })
+            }
+            writeToDisc({
+                path: context.getters['appPath'] + '/',
+                file: fileName,
+                data: {
+                    appData: context.state.data,
+                    moduleSettings,
+                }
+            });
         }
     },
     selectDirectory : (context, payload) => {

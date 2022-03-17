@@ -41,7 +41,8 @@ export default {
         })
     },
     mounted() {
-        this.$store.dispatch('initialize');
+        let vuexModules = this.$store._modules.root._children;
+        this.$store.dispatch('initialize', vuexModules);
         this.timer = setInterval(this.autoSave, 5000);
     },
     methods: {

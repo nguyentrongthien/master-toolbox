@@ -113,7 +113,6 @@ export default {
         events: [],
     }),
     mounted() {
-        this.$store.dispatch('initialize');
         this.timer = setInterval(this.count, this.interval);
     },
     methods: {

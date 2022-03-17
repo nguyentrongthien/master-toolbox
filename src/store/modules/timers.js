@@ -11,11 +11,7 @@ const state = {
     ongoing: [],
     upcoming: [],
     past: [],
-    names: [
-        'Lost Ark - Island',
-        'Lost Ark - Sailing Coop',
-        'Lost Ark - World Boss'
-    ],
+    names: [],
 };
 const getters = {
     ongoingEvents: state => state.ongoing,
@@ -23,6 +19,10 @@ const getters = {
     pastEvents: state => state.past,
     pastNames: state => state.names,
     getEventById: () => id => events[id],
+    getModuleData: state => ({
+        names: state.names,
+        events: events,
+    }),
 };
 const mutations = {
     sortUpcomingEvents: state => {
@@ -66,10 +66,14 @@ const mutations = {
         if (eventIndex >= 0) state.past.splice(eventIndex, 1);
     },
     addNewName: (state, name) => {
-        if (state.names.findIndex(item => item.name === name) < 0) {
+        if (state.names.findIndex(item => item === name) < 0) {
             state.names.push(name);
             state.names.sort();
         }
+    },
+    loadNamesFromSettings: (state, names) => {
+        state.names.splice(0);
+        state.names = names;
     }
 };
 const actions = {
@@ -117,6 +121,18 @@ const actions = {
         context.commit('removeUpcomingEvent', eventId);
         context.commit('removePastEvent', eventId);
         delete events[eventId];
+    },
+    setModuleData: (context, data) => {
+        if (data.names) context.commit('loadNamesFromSettings', data.names);
+        if (data.events) {
+            events = data.events;
+            for (const eventId in events) {
+                if (Object.hasOwnProperty.call(events, eventId)) {
+                    state.upcoming.push(eventId);
+                    context.commit('sortUpcomingEvents');
+                }
+            }
+        }
     }
 };
 
