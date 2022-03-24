@@ -31,47 +31,29 @@
                     </v-col>
                 </v-row>
 
-                <v-timeline v-if="events.length">
+                <v-timeline>
+                    <v-slide-x-transition group>
 
-                    <v-timeline-item
-                        v-for="(event, index) in events"
-                        :key="index"
-                        large
-                        :color="event.state === 'ongoing' ? 'green' : 'grey'"
-                    >
+                    <EventTimelineItem v-for="id in eventIds" :key="id" :value="id" :now="now" />
 
-                        <template v-slot:icon>
-                            <v-hover v-slot="{ hover }">
-                                <v-btn v-if="hover" fab color="red" @click="removeTimer(event.id)">
-                                    <v-icon>mdi-delete</v-icon>
-                                </v-btn>
-                                <v-btn v-else fab :color="event.isStartingSoon ? 'yellow' : event.state === 'ongoing' ? 'green' : 'grey'">
-                                    <v-icon>{{event.state === 'ongoing' ? 'mdi-bell-ring' : 'mdi-bell-outline'}}</v-icon>
-                                </v-btn>
-                            </v-hover>
-                        </template>
-
-                        <template v-slot:opposite>
-                            <span>{{event.fromNow}}</span>
-                        </template>
-                        <v-card :class="event.isStartingSoon ? 'elevation-2 upcomingEvent' : (event.state === 'ongoing' ? 'ongoingEvent' : '')">
-                            <v-card-title class="text-h5">
-                                {{event.name}}
-                            </v-card-title>
-                            <v-card-subtitle>
-                                Scheduled for: {{event.scheduled}}
-                                <br>
-                                Local time: {{event.local}}
-                            </v-card-subtitle>
-                            <v-card-text v-if="event.description" class="grey--text">{{event.description}}</v-card-text>
-                            <v-card-text v-else class="grey--text"><i>(No description provided)</i></v-card-text>
-                        </v-card>
-                    </v-timeline-item>
+                    </v-slide-x-transition>
                 </v-timeline>
+
+                <v-row justify="center">
+                    <v-col cols="auto">
+                        <v-card>
+                            <v-card-text class="text-center">
+                                End of timeline
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
 
         <NewTimerDialog v-model="newTimerDialog"/>
+
+        <AlertDialog />
 
         <v-speed-dial
             v-model="fab" bottom right fixed
@@ -98,10 +80,12 @@
 <script>
 import moment from "moment-timezone";
 import NewTimerDialog from "./components/NewTimerDialog";
+import AlertDialog from "./components/AlertDialog";
+import EventTimelineItem from "./components/EventTimelineItem";
 
 export default {
     name: "Main",
-    components: {NewTimerDialog},
+    components: {EventTimelineItem, AlertDialog, NewTimerDialog},
     data: () => ({
         interval: 1000, // in milliseconds
         timer: null, // the timer object
@@ -111,9 +95,11 @@ export default {
         newTimerDialog: false,
         fab: false,
         events: [],
+        now: 0,
     }),
     mounted() {
         this.timer = setInterval(this.count, this.interval);
+        this.now = moment().unix();
     },
     methods: {
         count() {
@@ -124,71 +110,21 @@ export default {
             this.test2 = moment.tz('America/Los_Angeles').format("dddd, MMMM Do YYYY, kk:mm:ss [(]Z[)]");
             this.$store.dispatch('timers/update');
 
-
-            this.events.splice(0);
-
-            this.$store.getters['timers/ongoingEvents'].forEach(eventId => {
-                this.pushNewEvent(this.$store.getters['timers/getEventById'](eventId), eventId, 'ongoing');
-            })
-            this.$store.getters['timers/upcomingEvents'].forEach(eventId => {
-                this.pushNewEvent(this.$store.getters['timers/getEventById'](eventId), eventId, 'upcoming');
-            })
+            this.now = moment().unix();
         },
-        pushNewEvent(event, id, state) {
-            let scheduledTime = moment.tz(event.date + ' ' + event.time, event.zone).tz('Australia/Sydney');
-            let fromNowInSeconds = scheduledTime.unix() - moment().unix();
-            this.events.push({
-                id: id,
-                scheduled: moment.tz(event.date + ' ' + event.time, event.zone).format("dddd, MMMM Do YYYY, kk:mm:ss [(]z[)]"),
-                local: scheduledTime.format("dddd, MMMM Do YYYY, kk:mm:ss [(]zz[)]"),
-                fromNow: fromNowInSeconds < 0 ? scheduledTime.fromNow() : this.convertToReadableDuration(fromNowInSeconds),
-                state: state,
-                isStartingSoon: (moment() < scheduledTime) & (moment() > scheduledTime.subtract(10, 'minutes')),
-                ...event
-            })
-        },
-        removeTimer(eventId) {
-            this.$store.dispatch('timers/deleteEvent', eventId);
-        },
-        convertToReadableDuration(duration) {
-            let readable = '';
-            let leftover = duration;
-            let hour = (leftover - (leftover % 3600)) / 3600;
-            leftover = leftover % 3600;
-            readable += (hour < 10 ? '0' + hour : hour) + ':';
-            let minute = (leftover - (leftover % 60)) / 60;
-            readable += (minute < 10 ? '0' + minute : minute) + ':';
-            leftover = leftover % 60;
-            readable += (leftover < 10 ? '0' + leftover : leftover);
-            return readable;
-        }
     },
     beforeDestroy() {
         clearInterval(this.timer);
     },
     computed: {
-
+        eventIds() {
+            return this.$store.getters['timers/upcomingEvents'];
+        },
     }
 }
 </script>
 
 <style scoped>
-    @keyframes flashBorder {
-        from {
-            border: 1px solid transparent;
-        }
-
-        to {
-            border: 1px solid gold;
-        }
-    }
-
-    .upcomingEvent {
-        animation-duration: 0.5s;
-        animation-name: flashBorder;
-        animation-iteration-count: infinite;
-        animation-direction: alternate;
-    }
     .ongoingEvent {
         border: 1px solid green;
     }

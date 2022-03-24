@@ -8,16 +8,16 @@ function getHashFromString(string) {
 let events = {};
 
 const state = {
-    ongoing: [],
     upcoming: [],
     past: [],
     names: [],
+    alerts: [],
 };
 const getters = {
-    ongoingEvents: state => state.ongoing,
     upcomingEvents: state => state.upcoming,
     pastEvents: state => state.past,
     pastNames: state => state.names,
+    eventsToAlert: state => state.alerts,
     getEventById: () => id => events[id],
     getModuleData: state => ({
         names: state.names,
@@ -44,19 +44,16 @@ const mutations = {
             duration: payload.duration,
             name: payload.name,
             description: payload.description,
+            shouldAlert: payload.shouldAlert,
+            alertBefore: payload.alertBefore,
+            alertSound: payload.alertBefore,
+            state: 'upcoming',
         }
         state.upcoming.push(id);
     },
     removeUpcomingEvent: (state, eventId) => {
         let eventIndex = state.upcoming.findIndex(id => id === eventId);
         if (eventIndex >= 0) state.upcoming.splice(eventIndex, 1);
-    },
-    addOngoingEvent: (state, eventId) => {
-        state.ongoing.push(eventId);
-    },
-    removeOngoingEvent: (state, eventId) => {
-        let eventIndex = state.ongoing.findIndex(id => id === eventId);
-        if (eventIndex >= 0) state.ongoing.splice(eventIndex, 1);
     },
     addPastEvent: (state, eventId) => {
         state.past.push(eventId);
@@ -74,7 +71,11 @@ const mutations = {
     loadNamesFromSettings: (state, names) => {
         state.names.splice(0);
         state.names = names;
-    }
+    },
+    addEventToAlert: (state, eventId) => {
+        state.alerts.push(eventId);
+    },
+    clearEventsToAlert: state => { state.alerts.splice(0); }
 };
 const actions = {
     addNewTimer: (context, payload) => {
@@ -83,41 +84,28 @@ const actions = {
         context.commit('sortUpcomingEvents');
     },
     update: (context) => {
-
-        let length = context.state.ongoing.length;
-        for(let i = 0; i < length; i++) {
-            let item = events[context.state.ongoing[i]];
-            let temp = moment.tz(item.date + ' ' + item.time, item.zone).tz('Australia/Sydney').unix();
-            if (moment().unix() >= temp + item.duration) {
-                context.commit('addPastEvent', context.state.ongoing[i]);
-                context.commit('removeOngoingEvent', context.state.ongoing[i]);
-                i--;
-                length--;
-            }
-        }
-
-        length = context.state.upcoming.length;
+        let length = context.state.upcoming.length;
+        let now = moment().unix();
 
         for(let i = 0; i < length; i++) {
             let item = events[context.state.upcoming[i]];
             let temp = moment.tz(item.date + ' ' + item.time, item.zone).tz('Australia/Sydney').unix();
-            if (moment().unix() >= temp + item.duration) {
+            if (now >= temp + item.duration) {
                 // TODO: maybe permanently delete an event that was moved to 'past' array???
                 context.commit('addPastEvent', context.state.upcoming[i]);
                 context.commit('removeUpcomingEvent', context.state.upcoming[i]);
                 i--;
                 length--;
-            } else if (moment().unix() >= temp) {
-                context.commit('addOngoingEvent', context.state.upcoming[i]);
-                context.commit('removeUpcomingEvent', context.state.upcoming[i]);
-                i--;
-                length--;
+            } else if (now >= temp) {
+                events[context.state.upcoming[i]].state = 'ongoing';
+            }
+            if (item.shouldAlert && now === temp - item.alertBefore) {
+                context.commit('addEventToAlert', context.state.upcoming[i]);
             }
 
         }
     },
     deleteEvent: (context, eventId) => {
-        context.commit('removeOngoingEvent', eventId);
         context.commit('removeUpcomingEvent', eventId);
         context.commit('removePastEvent', eventId);
         delete events[eventId];

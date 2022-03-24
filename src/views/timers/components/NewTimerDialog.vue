@@ -87,11 +87,33 @@
                             v-model="duration"
                             label="Duration"
                             type="number"
+                            hide-details
                             prepend-icon="mdi-clock-time-four-outline"
                         ></v-text-field>
                     </v-col>
                     <v-col cols="5">
-                        <v-select v-model="durationUnit" :items="durationUnits">
+                        <v-select v-model="durationUnit" :items="durationUnits" hide-details>
+
+                        </v-select>
+                    </v-col>
+                </v-row>
+
+
+                <v-row>
+                    <v-col :cols="shouldAlert ? 4 : 7">
+                        <v-switch
+                            v-model="shouldAlert"
+                            :label="shouldAlert ? 'Alert before' : 'Turn on alert'" hide-details
+                        ></v-switch>
+                    </v-col>
+                    <v-col cols="3" v-show="shouldAlert">
+                        <v-text-field
+                            v-model="alert"
+                            type="number"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="5" v-show="shouldAlert">
+                        <v-select v-model="alertUnit" :items="durationUnits">
 
                         </v-select>
                     </v-col>
@@ -146,6 +168,9 @@ export default {
         dateMenu: false,
         duration: 10,
         durationUnit: 1,
+        shouldAlert: false,
+        alert: 10,
+        alertUnit: 60,
         durationUnits: [
             {text: 'hours', value: 3600},
             {text: 'minutes', value: 60},
@@ -168,6 +193,9 @@ export default {
                 duration: this.duration * this.durationUnit,
                 name: this.name,
                 description: this.description,
+                shouldAlert: this.shouldAlert,
+                alertBefore: this.alert * this.alertUnit,
+                alertSound: null,
             }).then();
             this.resetInput();
             this.open = false;
