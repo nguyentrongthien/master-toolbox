@@ -17,7 +17,7 @@
         <template v-slot:opposite>
             <span>{{event.fromNow}}</span>
         </template>
-        <v-card :class="event.isStartingSoon ? 'elevation-2 upcomingEvent' : (event.state === 'ongoing' ? 'ongoingEvent' : '')">
+        <v-card :class="event.isStartingSoon ? 'elevation-2 upcomingEvent' : (event.state === 'ongoing' ? 'ongoingEvent' : '')" max-width="450">
             <v-card-title class="text-h5">
                 {{event.name}}
             </v-card-title>

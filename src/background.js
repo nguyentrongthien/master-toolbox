@@ -60,6 +60,7 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
+  registerLocalVideoProtocol();
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
@@ -97,4 +98,22 @@ if (isDevelopment) {
       app.quit()
     })
   }
+}
+
+// https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/872#issuecomment-656292808
+function registerLocalVideoProtocol () {
+  protocol.registerFileProtocol('local-assets', (request, callback) => {
+    const url = request.url.replace(/^local-assets:\/\//, '')
+    // Decode URL to prevent errors when loading filenames with UTF-8 chars or chars like "#"
+    const decodedUrl = decodeURI(url) // Needed in case URL contains spaces
+    try {
+      // eslint-disable-next-line no-undef
+      return callback(path.join(__static, decodedUrl))
+    } catch (error) {
+      console.error(
+          'ERROR: registerLocalVideoProtocol: Could not get file path:',
+          error
+      )
+    }
+  })
 }

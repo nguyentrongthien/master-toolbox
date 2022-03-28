@@ -63,7 +63,7 @@ const mutations = {
         if (eventIndex >= 0) state.past.splice(eventIndex, 1);
     },
     addNewName: (state, name) => {
-        if (state.names.findIndex(item => item === name) < 0) {
+        if (name && state.names.findIndex(item => item === name) < 0) {
             state.names.push(name);
             state.names.sort();
         }
@@ -92,7 +92,7 @@ const actions = {
             let temp = moment.tz(item.date + ' ' + item.time, item.zone).tz('Australia/Sydney').unix();
             if (now >= temp + item.duration) {
                 // TODO: maybe permanently delete an event that was moved to 'past' array???
-                context.commit('addPastEvent', context.state.upcoming[i]);
+                delete events[context.state.upcoming[i]];
                 context.commit('removeUpcomingEvent', context.state.upcoming[i]);
                 i--;
                 length--;

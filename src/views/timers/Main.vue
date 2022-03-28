@@ -31,15 +31,19 @@
                     </v-col>
                 </v-row>
 
-                <v-timeline>
-                    <v-slide-x-transition group>
+                <v-row justify="center" class="mt-0">
+                    <v-col xl="7" lg="10" cols="12" class="pa-0">
+                        <v-timeline>
+                            <v-slide-x-transition group>
 
-                    <EventTimelineItem v-for="id in eventIds" :key="id" :value="id" :now="now" />
+                                <EventTimelineItem v-for="id in eventIds" :key="id" :value="id" :now="now" />
 
-                    </v-slide-x-transition>
-                </v-timeline>
+                            </v-slide-x-transition>
+                        </v-timeline>
+                    </v-col>
+                </v-row>
 
-                <v-row justify="center">
+                <v-row justify="center" class="mt-0">
                     <v-col cols="auto">
                         <v-card>
                             <v-card-text class="text-center">

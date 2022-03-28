@@ -14,7 +14,7 @@
                         </v-col>
                     </v-row>
                     <audio tabindex="0" ref="alertPlayer" loop>
-                        <source :src="require('../../../assets/sounds/alarm-001.wav')">
+                        <source src="local-assets://alarm-001.wav">
                     </audio>
                 </v-container>
             </v-card-text>
