@@ -26,9 +26,16 @@ import Sidebar from "./components/cores/Sidebar";
 import Appbar from "./components/cores/Appbar";
 import PromptForDirectory from "./components/PromptForDirectory";
 import { mapGetters } from 'vuex';
+import moment from "moment-timezone";
+
+let writeInterval = 5;
+let writeCount = 0;
 
 export default {
     name: 'App',
+    data: () => ({
+
+    }),
     components: {
         Sidebar,
         PromptForDirectory,
@@ -43,14 +50,16 @@ export default {
     mounted() {
         let vuexModules = this.$store._modules.root._children;
         this.$store.dispatch('initialize', vuexModules);
-        this.timer = setInterval(this.autoSave, 5000);
+        this.timer = setInterval(this.timeTick, 1000);
     },
     methods: {
-        autoSave () {
-            this.$store.dispatch('writeData');
-        },
-        autoUpdate() {
-
+        timeTick () {
+            writeCount++;
+            if (writeCount >= writeInterval) {
+                writeCount = 0;
+                this.$store.dispatch('writeData');
+            }
+            this.$store.commit('setNowInUnix', moment().unix());
         },
         cancelAutoUpdate () {
             clearInterval(this.timer);

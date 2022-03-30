@@ -16,6 +16,13 @@
                 <v-list-item-title>Timers</v-list-item-title>
             </v-list-item>
 
+            <v-list-item to="/checklists">
+                <v-list-item-action>
+                    <v-icon>mdi-format-list-checks</v-icon>
+                </v-list-item-action>
+                <v-list-item-title>Check lists</v-list-item-title>
+            </v-list-item>
+
             <v-divider></v-divider>
 
             <v-list-item to="/settings">

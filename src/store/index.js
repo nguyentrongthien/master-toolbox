@@ -49,6 +49,7 @@ const state = {
     appPath: null,
     promptForDirectory: false,
     moduleNames: [],
+    now: 0,
 };
 const mutations = {
     setData : (state, payload) => {
@@ -72,6 +73,9 @@ const mutations = {
     setPromptForDirectory : (state, bool = true) => {
         state.promptForDirectory = bool;
     },
+    setNowInUnix : (state, now) => {
+        state.now = now;
+    }
 };
 const getters = {
     isBusy : state => state.busy,
@@ -82,6 +86,7 @@ const getters = {
     drawer : state => state.drawer,
     appPath : state => state.appPath,
     promptForDirectory : state => state.promptForDirectory,
+    nowInUnix: state => state.now,
 };
 const actions = {
     initialize : (context, moduleNames) => {
@@ -114,7 +119,7 @@ const actions = {
             payload.result.moduleSettings.forEach(data => {
                 if(context.state.moduleNames.includes(data.name)) {
                     try {
-                        context.dispatch(`${data.name}/setModuleData`, data.settings).then();
+                        context.dispatch(`${data.name}/_setModuleData`, data.settings).then();
                     } catch (e) { console.log(e); }
                 }
             })
@@ -124,7 +129,7 @@ const actions = {
         if(context.state.data.version) { // Check if data has already been initialized (might have concurrency issue)
             let moduleSettings = [];
             for (let name of context.state.moduleNames) {
-                let settings = context.rootGetters[`${name}/getModuleData`];
+                let settings = context.rootGetters[`${name}/_getModuleData`];
                 if (settings) moduleSettings.push({ name: name, settings })
             }
             writeToDisc({

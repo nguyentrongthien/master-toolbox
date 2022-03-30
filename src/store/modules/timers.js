@@ -19,7 +19,7 @@ const getters = {
     pastNames: state => state.names,
     eventsToAlert: state => state.alerts,
     getEventById: () => id => events[id],
-    getModuleData: state => ({
+    _getModuleData: state => ({
         names: state.names,
         events: events,
     }),
@@ -68,7 +68,7 @@ const mutations = {
             state.names.sort();
         }
     },
-    loadNamesFromSettings: (state, names) => {
+    _loadNamesFromSettings: (state, names) => {
         state.names.splice(0);
         state.names = names;
     },
@@ -110,8 +110,8 @@ const actions = {
         context.commit('removePastEvent', eventId);
         delete events[eventId];
     },
-    setModuleData: (context, data) => {
-        if (data.names) context.commit('loadNamesFromSettings', data.names);
+    _setModuleData: (context, data) => {
+        if (data.names) context.commit('_loadNamesFromSettings', data.names);
         if (data.events) {
             events = data.events;
             for (const eventId in events) {

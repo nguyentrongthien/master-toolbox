@@ -86,6 +86,7 @@ import moment from "moment-timezone";
 import NewTimerDialog from "./components/NewTimerDialog";
 import AlertDialog from "./components/AlertDialog";
 import EventTimelineItem from "./components/EventTimelineItem";
+import { mapGetters } from "vuex";
 
 export default {
     name: "Main",
@@ -101,12 +102,14 @@ export default {
         events: [],
         now: 0,
     }),
-    mounted() {
-        this.timer = setInterval(this.count, this.interval);
-        this.now = moment().unix();
+    computed: {
+        ...mapGetters(['nowInUnix']),
+        eventIds() {
+            return this.$store.getters['timers/upcomingEvents'];
+        },
     },
-    methods: {
-        count() {
+    watch: {
+        nowInUnix(val) {
             this.mainClock = moment().format("hh:mm a");
             this.calendarDate = moment().format("dddd, Do [of] MMMM, YYYY");
             // this.test2 = moment('14 Dec 2022 19:30 PST').isDST();
@@ -114,16 +117,8 @@ export default {
             this.test2 = moment.tz('America/Los_Angeles').format("dddd, MMMM Do YYYY, kk:mm:ss [(]Z[)]");
             this.$store.dispatch('timers/update');
 
-            this.now = moment().unix();
-        },
-    },
-    beforeDestroy() {
-        clearInterval(this.timer);
-    },
-    computed: {
-        eventIds() {
-            return this.$store.getters['timers/upcomingEvents'];
-        },
+            this.now = val;
+        }
     }
 }
 </script>
