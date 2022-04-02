@@ -1,7 +1,7 @@
 <template>
-    <v-container >
-        <v-row>
-            <v-col cols="4" v-for="id in checklistIds" :key="id">
+    <v-container fluid>
+        <v-row justify="center">
+            <v-col xl="2" lg="4" md="5" sm="6" cols="12" v-for="id in checklistIds" :key="id">
                 <CheckListItem :value="id" :now="now" @checkListUpdateRequested="updateCheckList" />
             </v-col>
         </v-row>

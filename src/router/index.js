@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home'
 import Timers from '../views/timers/Main'
 import CheckLists from '../views/checklists/Main'
+import Cropper from '../views/cropper/Main'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
         path: '/checklists',
         name: 'Check Lists',
         component: CheckLists
+    },
+    {
+        path: '/cropper',
+        name: 'Cropper',
+        component: Cropper
     },
 ]
 

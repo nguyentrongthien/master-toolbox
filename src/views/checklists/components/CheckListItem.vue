@@ -24,6 +24,9 @@
                         <v-list-item @click="cloneThisList">
                             <v-list-item-title>Clone list</v-list-item-title>
                         </v-list-item>
+                        <v-list-item @click="setImage">
+                            <v-list-item-title>Set image</v-list-item-title>
+                        </v-list-item>
                         <v-divider></v-divider>
                         <v-list-item  @click.stop="adding = !adding">
                             <v-list-item-title class="green--text">Add new item</v-list-item-title>
@@ -194,6 +197,10 @@ export default {
             readable += (leftover > 0 ? (leftover > 1 ? leftover + ' seconds ' : leftover + ' second ') : '') + 'ago';
             return readable;
         },
+        setImage() {
+            this.$store.dispatch('checklists/requestImageForList', this.value);
+            this.$router.push({path: '/cropper'});
+        }
     },
     computed: {
         checkList() {

@@ -26,5 +26,19 @@ export default {
             }
         }
         return data;
+    },
+    writeImage : (args) => {
+        let { filename, base64 } = args;
+        let data = base64.replace(/^data:image\/png;base64,/, "");
+        let filepath = prepareDirectory(filename, app.getPath('appData') + '/MasterToolbox');
+        fs.writeFileSync(filepath, data, 'base64', function(err) {
+            console.log(err);
+        });
+        return filepath;
     }
+}
+
+function prepareDirectory(fileName, targetLocation) {
+    if(!fs.existsSync(targetLocation)) fs.mkdirSync(targetLocation, {recursive: true});
+    return targetLocation + '/' + fileName;
 }

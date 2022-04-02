@@ -13,11 +13,14 @@
 
         <v-spacer></v-spacer>
 
+        <v-btn color="red" text @click.stop="$router.back()">
+            cancel
+        </v-btn>
         <v-btn dark icon>
             <v-icon>mdi-cloud-upload-outline</v-icon>
         </v-btn>
 
-        <v-btn dark icon title="Undo (Ctrl + Z)" @click="$emit('change', 'restore')">
+        <v-btn dark icon title="Undo (Ctrl + Z)" @click="$emit('change', 'restore')" :disabled="!data.previousUrl">
             <v-icon>mdi-undo</v-icon>
         </v-btn>
 
@@ -36,10 +39,14 @@
             <v-icon>mdi-check-circle-outline</v-icon>
         </v-btn>
 
-        <v-btn v-if="downloadable && data.loaded" dark icon title="Download"
-               :download="data.name"
-               :href="data.url">
-            <v-icon>mdi-download</v-icon>
+<!--        <v-btn v-if="downloadable && data.loaded" dark icon title="Download"-->
+<!--               :download="data.name"-->
+<!--               :href="data.url">-->
+<!--            <v-icon>mdi-download</v-icon>-->
+<!--        </v-btn>-->
+        <v-btn v-if="canBeSaved && data.loaded" dark icon title="Download" color="green"
+               @click="$emit('change', 'save')">
+            <v-icon>mdi-content-save-outline</v-icon>
         </v-btn>
 
         <v-btn dark icon
@@ -72,6 +79,11 @@ export default {
             }
         },
     },
+    computed: {
+        canBeSaved() {
+            return this.data.url.includes('data:image/png;base64');
+        }
+    }
 };
 </script>
 

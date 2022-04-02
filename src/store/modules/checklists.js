@@ -68,7 +68,6 @@ const mutations = {
             item.checked = !!payload.indexes.includes(index);
         })
     },
-
     _loadActiveListFromSettings: (state, active) => {
         state.active.splice(0);
         state.active = active;
@@ -104,12 +103,24 @@ const actions = {
         newList['id'] = null;
         context.commit('createOrUpdateCheckList', newList);
     },
+    requestImageForList: (context, listId) => {
+        context.commit('editor/setCurrentImageEditingJob', {
+            filename: listId,
+            callback: 'checklists/receiveImageForList'
+        }, {root: true});
+    },
+    receiveImageForList: (context, payload) => {
+        let { filename, filepath } = payload;
+        if (checklists[filename]) {
+            checklists[filename].img = filepath + '?' + moment().unix();
+        }
+    },
     _setModuleData: (context, data) => {
         if (data.checklists) {
             checklists = data.checklists;
         }
         if (data.active) context.commit('_loadActiveListFromSettings', data.active);
-    }
+    },
 }
 
 export default {

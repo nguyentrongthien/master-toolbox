@@ -229,8 +229,9 @@ export default {
             }
             this.cropper = new Cropper(this.$refs.image, {
                 autoCrop: false,
-                dragMode: 'move',
+                dragMode: 'crop',
                 background: false,
+                aspectRatio: 1.5,
                 ready: () => {
                     if (this.croppedData) {
                         this.cropper
@@ -307,6 +308,14 @@ export default {
         update(data) {
             Object.assign(this.data, data);
         },
+        save() {
+            //TODO: implement mechanics to save the cropped image
+            const { data } = this;
+            this.$store.dispatch('editor/requestImageForCurrentJob', {
+                extension: data.name.substring(data.name.lastIndexOf('.')),
+                base64: data.url
+            });
+        }
     },
 };
 </script>

@@ -22,6 +22,12 @@
                 </v-list-item-action>
                 <v-list-item-title>Check lists</v-list-item-title>
             </v-list-item>
+<!--            <v-list-item to="/cropper">-->
+<!--                <v-list-item-action>-->
+<!--                    <v-icon>mdi-format-list-checks</v-icon>-->
+<!--                </v-list-item-action>-->
+<!--                <v-list-item-title>Cropper</v-list-item-title>-->
+<!--            </v-list-item>-->
 
             <v-divider></v-divider>
 
