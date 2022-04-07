@@ -9,7 +9,7 @@ let checklists = {};
 
 const state = {
     active: [],
-};
+};////
 
 const getters = {
     getCheckListById: () => id => checklists[id],
@@ -68,6 +68,24 @@ const mutations = {
             item.checked = !!payload.indexes.includes(index);
         })
     },
+    sortCheckLists: state => {
+        state.active.sort((a, b) => {
+                let list1 = checklists[a].items.reduce((acc, item) => {
+                    if (!item.checked) acc++;
+                    return acc;
+                }, 0);
+                let list2 = checklists[b].items.reduce((acc, item) => {
+                    if (!item.checked) acc++;
+                    return acc;
+                }, 0);
+                if (list1 <= 0 && list2 > 0)
+                    return 1;
+                else if (list1 > 0 && list2 <= 0)
+                    return -1;
+                else return 0;
+            }
+        )
+    },
     _loadActiveListFromSettings: (state, active) => {
         state.active.splice(0);
         state.active = active;
@@ -115,11 +133,18 @@ const actions = {
             checklists[filename].img = filepath + '?' + moment().unix();
         }
     },
+    updateCheckedItems: (context, payload) => {
+        context.commit('setCheckedItems', payload);
+        context.commit('sortCheckLists');
+    },
     _setModuleData: (context, data) => {
         if (data.checklists) {
             checklists = data.checklists;
         }
-        if (data.active) context.commit('_loadActiveListFromSettings', data.active);
+        if (data.active) {
+            context.commit('_loadActiveListFromSettings', data.active);
+            context.commit('sortCheckLists');
+        }
     },
 }
 
