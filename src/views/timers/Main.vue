@@ -57,8 +57,6 @@
 
         <NewTimerDialog v-model="newTimerDialog"/>
 
-        <AlertDialog />
-
         <v-speed-dial
             v-model="fab" bottom right fixed
             direction="top" open-on-hover
@@ -84,13 +82,12 @@
 <script>
 import moment from "moment-timezone";
 import NewTimerDialog from "./components/NewTimerDialog";
-import AlertDialog from "./components/AlertDialog";
 import EventTimelineItem from "./components/EventTimelineItem";
 import { mapGetters } from "vuex";
 
 export default {
     name: "Main",
-    components: {EventTimelineItem, AlertDialog, NewTimerDialog},
+    components: {EventTimelineItem, NewTimerDialog},
     data: () => ({
         interval: 1000, // in milliseconds
         timer: null, // the timer object
@@ -115,7 +112,6 @@ export default {
             // this.test2 = moment('14 Dec 2022 19:30 PST').isDST();
             // this.test2 = moment.tz('2022-03-12 21:00', 'America/Los_Angeles').tz('Australia/Sydney').format("dddd, MMMM Do YYYY, h:mm:ss a [(]Z[)]");
             this.test2 = moment.tz('America/Los_Angeles').format("dddd, MMMM Do YYYY, kk:mm:ss [(]Z[)]");
-            this.$store.dispatch('timers/update');
 
             this.now = val;
         }

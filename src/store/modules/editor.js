@@ -23,15 +23,6 @@ const mutations = {
 }
 
 const actions = {
-    test: (context, payload) => {
-        let { filename, base64 } = payload;
-        window.ipcRenderer.send('from-renderer', {
-            fn: 'writeImage', payload: { filename, base64 }, passThrough: {flag: 'editor/dummy'}
-        });
-    },
-    dummy: () => {
-
-    },
     requestImageForCurrentJob: (context, payload) => {
         if (state.job.callback && state.job.filename) {
             let { extension, base64 } = payload;

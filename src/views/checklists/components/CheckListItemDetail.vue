@@ -54,6 +54,39 @@
 
         </v-list-item>
 
+        <v-list
+            subheader
+            two-line
+            flat
+            v-show="adding"
+        >
+            <v-divider></v-divider>
+            <v-list-item>
+
+                <v-list-item-content>
+                    <v-form ref="form" @submit.prevent="addNewItem" v-model="isFormValid">
+                        <v-text-field label="Item's Title" v-model="newItemTitle" :rules="newItemTitleRules"
+                                      placeholder="A title for the task" autofocus>
+                        </v-text-field>
+                        <v-text-field label="Item's Description" v-model="newItemDescription" hide-details
+                                      placeholder="A short description for the task">
+                        </v-text-field>
+
+                        <button type="submit" class="d-none"></button>
+                    </v-form>
+                </v-list-item-content>
+            </v-list-item>
+            <v-list-item>
+                <v-btn text color="orange" @click.stop="adding = false" outlined>cancel</v-btn>
+                <v-btn text class="ml-2" @click.stop="resetForm">
+                    reset
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn text color="green" @click.stop="addNewItem" outlined>done</v-btn>
+            </v-list-item>
+            <v-divider></v-divider>
+        </v-list>
+
         <v-expansion-panels v-model="panels">
             <v-expansion-panel>
                 <v-expansion-panel-header disable-icon-rotate>
@@ -92,7 +125,7 @@
                                     </v-list-item-content>
                                     <v-list-item-icon>
                                         <v-btn color="red" icon @click.stop="removeItem(index)" small>
-                                            <v-icon small>mdi-delete-outline</v-icon>
+                                            <v-icon small>mdi-close</v-icon>
                                         </v-btn>
                                     </v-list-item-icon>
                                 </template>
@@ -102,39 +135,6 @@
                 </v-expansion-panel-content>
             </v-expansion-panel>
         </v-expansion-panels>
-
-        <v-list
-            subheader
-            two-line
-            flat
-            v-show="adding"
-        >
-            <v-divider></v-divider>
-            <v-list-item>
-
-                <v-list-item-content>
-                    <v-form ref="form" @submit.prevent="addNewItem" v-model="isFormValid">
-                        <v-text-field label="Item's Title" v-model="newItemTitle" :rules="newItemTitleRules"
-                                      placeholder="A title for the task" autofocus>
-                        </v-text-field>
-                        <v-text-field label="Item's Description" v-model="newItemDescription" hide-details
-                                      placeholder="A short description for the task">
-                        </v-text-field>
-
-                        <button type="submit" class="d-none"></button>
-                    </v-form>
-                </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-                <v-btn text color="orange" @click.stop="adding = false" outlined>cancel</v-btn>
-                <v-btn text class="ml-2" @click.stop="resetForm">
-                    reset
-                </v-btn>
-                <v-spacer></v-spacer>
-                <v-btn text color="green" @click.stop="addNewItem" outlined>done</v-btn>
-            </v-list-item>
-            <v-divider></v-divider>
-        </v-list>
 
     </v-card>
 </template>

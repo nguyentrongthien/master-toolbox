@@ -18,6 +18,8 @@
 
         <PromptForDirectory />
 
+        <AlertDialog />
+
     </v-app>
 </template>
 
@@ -27,6 +29,7 @@ import Appbar from "./components/cores/Appbar";
 import PromptForDirectory from "./components/PromptForDirectory";
 import { mapGetters } from 'vuex';
 import moment from "moment-timezone";
+import AlertDialog from "./views/timers/components/AlertDialog";
 
 let writeInterval = 5;
 let writeCount = 0;
@@ -37,6 +40,7 @@ export default {
 
     }),
     components: {
+        AlertDialog,
         Sidebar,
         PromptForDirectory,
         Appbar,
@@ -60,6 +64,7 @@ export default {
                 this.$store.dispatch('writeData');
             }
             this.$store.commit('setNowInUnix', moment().unix());
+            this.$store.dispatch('timers/update');
         },
         cancelAutoUpdate () {
             clearInterval(this.timer);
